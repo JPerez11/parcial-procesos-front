@@ -28,7 +28,7 @@ async function login() {
     }
 }
 
-function listar(){
+function listUsers(){
     validaToken();
     var settings={
         method: 'GET',
@@ -68,6 +68,36 @@ function listar(){
             }
             document.getElementById("listar").innerHTML = usuarios;
     })
+}
+
+function showListUsers() {
+    let showList = 
+    `<div id="datos"></div>
+
+    <div class="p-3 mb-2 bg-light text-dark">
+      <h1 class="display-5"><i class="fa-solid fa-list"></i> Listado de usuarios</h1>
+    </div>
+    
+    <a href="#" onclick="registerForm()" class="btn btn-outline-success"><i class="fa-solid fa-user-plus"></i></a>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">First Name</th>
+          <th scope="col">Last Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Address</th>
+          <th scope="col">Birthday</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody id="listar">
+
+      </tbody>
+    </table>`;
+    document.getElementById("page_title").innerHTML = "GESTIÓN DE USUARIOS";
+    document.getElementById("card_body").innerHTML = showList;
+    listUsers();
 }
 
 function verModificarUsuario(id){

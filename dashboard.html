@@ -8,7 +8,7 @@
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-              <a class="navbar-brand" href="#">ProcesosUFPSO</a>
+              <a class="navbar-brand" href="dashboard.html">ProcesosUFPSO</a>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
@@ -18,7 +18,10 @@
                     <a class="nav-link active" aria-current="page" href="dashboard.html">Home</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="listar()">Users</a>
+                    <a class="nav-link" href="#" onclick="showListUsers()">Users</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="listProducts()">Products</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link" href="#" onclick="salir()">Logout</a>
@@ -30,42 +33,22 @@
           <div class="container-fluid">
             <div class="card">
                 <div class="card-header">
-                  <h1>Bienvenido!!! </h1>
+                  <h1 id="page_title">Bienvenido!!!</h1>
                 </div>
-                <div class="card-body">
-                  
-                  <div id="datos"></div>
-
-                  <div class="p-3 mb-2 bg-light text-dark">
-                    <h1 class="display-5"><i class="fa-solid fa-list"></i> Listado de usuarios</h1>
+                <div class="card-body" id="card_body">
+                  <div class="container-sm w-50 p-3">
+                    <picture>
+                      <source srcset="" type="image/png">
+                      <img src="vendor/img/sello_acreditado_carrera.png" class="img-fluid img-thumbnail" alt="...">
+                    </picture>
                   </div>
                   
-                  <a href="#" onclick="registerForm()" class="btn btn-outline-success"><i class="fa-solid fa-user-plus"></i></a>
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">First Name</th>
-                        <th scope="col">Last Name</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Address</th>
-                        <th scope="col">Birthday</th>
-                        <th scope="col">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody id="listar">
-
-                    </tbody>
-                  </table>
                 </div>
             </div>
           </div>
           
         <script src="js/local.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-        <script>
-          listar();
-        </script>
 
         <!-- Modal -->
         <div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
