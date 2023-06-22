@@ -138,8 +138,9 @@ function verModificarUsuario(id){
                     </button>
                 </form>`;
             }
+            document.getElementById("myModalTitle").innerHTML = "UPDATE USER";
             document.getElementById("contentModal").innerHTML = cadena;
-            var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
+            var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'));
             myModal.toggle();
     })
 }
@@ -162,9 +163,9 @@ async function modificarUsuario(id){
         body: JSON.stringify(jsonData)
     });
     listar();
-    alertas("Se ha modificado el usuario exitosamente!",1)
+    alertas("Se ha modificado el usuario exitosamente!",1);
     document.getElementById("contentModal").innerHTML = '';
-    var myModalEl = document.getElementById('modalUsuario')
+    var myModalEl = document.getElementById('modalUsuario');
     var modal = bootstrap.Modal.getInstance(myModalEl) // Returns a Bootstrap modal instance
     modal.hide();
 }
@@ -197,6 +198,7 @@ function verUsuario(id){
                 </ul>`;
               
             }
+            document.getElementById("myModalTitle").innerHTML = "SHOW USER"
             document.getElementById("contentModal").innerHTML = cadena;
             var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
             myModal.toggle();
@@ -241,6 +243,7 @@ function registerForm(){
                 <input type="date" class="form-control" id="birthday" name="birthday" required> <br>
                 <button type="button" class="btn btn-outline-info" onclick="registrarUsuario()">Registrar</button>
             </form>`;
+            document.getElementById("myModalTitle").innerHTML = "REGISTER USER"
             document.getElementById("contentModal").innerHTML = cadena;
             var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
             myModal.toggle();
@@ -264,6 +267,201 @@ async function registrarUsuario(){
     });
     listar();
     alertas("Se ha registrado el usuario exitosamente!",1)
+    document.getElementById("contentModal").innerHTML = '';
+    var myModalEl = document.getElementById('modalUsuario')
+    var modal = bootstrap.Modal.getInstance(myModalEl) // Returns a Bootstrap modal instance
+    modal.hide();
+}
+
+function showListProducts() {
+    let showList = 
+    `<div id="datos"></div>
+
+    <div class="p-3 mb-2 bg-light text-dark">
+      <h1 class="display-5"><i class="fa-solid fa-list"></i> Listado de productos</h1>
+    </div>
+    
+    <a href="#" onclick="registerFormProduct()" class="btn btn-outline-success"><i class="fa-solid fa-user-plus"></i></a>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Title</th>
+          <th scope="col">Price</th>
+          <th scope="col">Description</th>
+          <th scope="col">Category</th>
+          <th scope="col">Image</th>
+          <th scope="col">Owner</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody id="listar">
+
+      </tbody>
+    </table>`;
+    document.getElementById("page_title").innerHTML = "GESTIÓN DE PRODUCTOS";
+    document.getElementById("card_body").innerHTML = showList;
+    listProducts();
+}
+
+function listProducts() {
+    validaToken();
+    var settings={
+        method: 'GET',
+        headers:{
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.token}`
+        },
+    }
+    fetch(`${urlApi}/api/product/`,settings)
+    .then(response => response.json())
+    .then(function(data){
+        
+            var products = '';
+            let count = 0;
+            for(const prod of data.data){
+                count++;
+                products += `
+                <tr>
+                    <th scope="row">${count}</th>
+                    <td>${prod.title}</td>
+                    <td>${prod.price}</td>
+                    <td>${prod.description}</td>
+                    <td>${prod.category}</td>
+                    <td>${prod.image}</td>
+                    <td>${prod.user.name}</td>
+                    <td>
+                    <a href="#" onclick="showUpdateProduct('${prod.id}')" class="btn btn-outline-warning">
+                        <i class="fa-solid fa-user-pen"></i>
+                    </a>
+                    <a href="#" onclick="showProduct('${prod.id}')" class="btn btn-outline-info">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
+                    </td>
+                </tr>`;
+                
+            }
+            document.getElementById("listar").innerHTML = products;
+    })
+}
+
+function showUpdateProduct(id){
+    validaToken();
+    var settings={
+        method: 'GET',
+        headers:{
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.token}`
+        },
+    }
+    fetch(`${urlApi}/api/product/${id}`,settings)
+    .then(response => response.json())
+    .then(function(product){
+            var cadena='';
+            if(product){                
+                cadena = `
+                <div class="p-3 mb-2 bg-light text-dark">
+                    <h1 class="display-5"><i class="fa-solid fa-user-pen"></i>Update Product</h1>
+                </div>
+              
+                <form action="" method="post" id="myForm">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" class="form-control" name="title" id="title" required value="${product.data.title}"> <br>
+                    <label for="price"  class="form-label">Price</label>
+                    <input type="number" class="form-control" name="price" id="price" required value="${product.data.price}"> <br>
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3" required">${product.data.description}</textarea>
+                    <label for="category" class="form-label">Category</label>
+                    <input type="text" class="form-control" name="category" id="category" required value="${product.data.category}"> <br>
+                    <label for="image" class="form-label">Image</label>
+                    <input type="text" class="form-control" id="image" name="image" required value="${product.data.image}"> <br>
+                    <label for="user" class="form-label">User</label>
+                    <input type="text" class="form-control" id="user" name="user" required value="${product.data.user.id}"> <br>
+                    <button type="button" class="btn btn-outline-warning" 
+                        onclick="updateProduct('${id}')">Update
+                    </button>
+                </form>`;
+            }
+            document.getElementById("myModalTitle").innerHTML = "UPDATE PRODUCT"
+            document.getElementById("contentModal").innerHTML = cadena;
+            var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'));
+            myModal.toggle();
+    })
+}
+
+async function updateProduct(id){
+    validaToken();
+    var myForm = document.getElementById("myForm");
+    var formData = new FormData(myForm);
+    var jsonData = {};
+    for(var [k, v] of formData){//convertimos los datos a json
+        jsonData[k] = v;
+    }
+    const request = await fetch(`${urlApi}/api/product/${id}`, {
+        method: 'PUT',
+        headers:{
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.token}`
+        },
+        body: JSON.stringify(jsonData)
+    });
+    listar();
+    alertas("Se ha modificado el producto exitosamente!",1)
+    document.getElementById("contentModal").innerHTML = '';
+    var myModalEl = document.getElementById('modalUsuario')
+    var modal = bootstrap.Modal.getInstance(myModalEl) // Returns a Bootstrap modal instance
+    modal.hide();
+}
+
+
+function registerFormProduct(){
+    cadena = `
+            <div class="p-3 mb-2 bg-light text-dark">
+                <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Registrar Usuario</h1>
+            </div>
+              
+            <form action="" method="post" id="myForm">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" name="title" id="title" required> <br>
+                <label for="price"  class="form-label">Price</label>
+                <input type="number" class="form-control" name="price" id="price" required> <br>
+                <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3" required"></textarea>
+                    <label for="category" class="form-label">Category</label>
+                    <input type="text" class="form-control" name="category" id="category" required> <br>
+                    <label for="image" class="form-label">Image</label>
+                    <input type="text" class="form-control" id="image" name="image" required> <br>
+                    <label for="userId" class="form-label">User</label>
+                    <input type="text" class="form-control" id="userId" name="userId" required> <br>
+                <button type="button" class="btn btn-outline-info" onclick="registerProduct()">Registrar</button>
+            </form>`;
+            document.getElementById("myModalTitle").innerHTML = "REGISTER USER"
+            document.getElementById("contentModal").innerHTML = cadena;
+            var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
+            myModal.toggle();
+}
+
+async function registerProduct(){
+    var myForm = document.getElementById("myForm");
+    var formData = new FormData(myForm);
+    var jsonData = {};
+    for(var [k, v] of formData){//convertimos los datos a json
+        jsonData[k] = v;
+    }
+    const request = await fetch(`${urlApi}/api/product/`, {
+        method: 'POST',
+        headers:{
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.token}`
+        },
+        body: JSON.stringify(jsonData)
+    });
+    listProducts();
+    alertas("Se ha registrado el producto exitosamente!",1)
     document.getElementById("contentModal").innerHTML = '';
     var myModalEl = document.getElementById('modalUsuario')
     var modal = bootstrap.Modal.getInstance(myModalEl) // Returns a Bootstrap modal instance
