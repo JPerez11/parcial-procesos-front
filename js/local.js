@@ -1,8 +1,8 @@
 //funciones propias de la app
-const urlApi = "";//colocar la url con el puerto
+const urlApi = "http://localhost:8081";//colocar la url con el puerto
 
-async function login(){
-    var myForm = document.getElementById("myForm");
+async function login() {
+    var myForm = document.getElementById("formLogin");
     var formData = new FormData(myForm);
     var jsonData = {};
     for(var [k, v] of formData){//convertimos los datos a json
@@ -16,11 +16,11 @@ async function login(){
         },
         body: JSON.stringify(jsonData)
     }
-    const request = await fetch(urlApi+"/api/auth/login",settings);
+    const request = await fetch(`${urlApi}/auth/login`,settings);
     //console.log(await request.text());
     if(request.ok){
         const respuesta = await request.json();
-        localStorage.token = respuesta.detail;
+        localStorage.token = respuesta.token;
 
         //localStorage.token = respuesta;
         localStorage.email = jsonData.email;      
@@ -35,56 +35,38 @@ function listar(){
         headers:{
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': localStorage.token
+            'Authorization': `Bearer ${localStorage.token}`
         },
     }
-    fetch(urlApi+"/api/users",settings)
+    fetch(`${urlApi}/api/users/`,settings)
     .then(response => response.json())
     .then(function(data){
         
             var usuarios = '';
+            let count = 0;
             for(const usuario of data){
+                count++;
                 console.log(usuario.email)
                 usuarios += `
                 <tr>
-                    <th scope="row">${usuario.id}</th>
-                    <td>${usuario.firstName}</td>
+                    <th scope="row">${count}</th>
+                    <td>${usuario.name}</td>
                     <td>${usuario.lastName}</td>
                     <td>${usuario.email}</td>
+                    <td>${usuario.address}</td>
+                    <td>${usuario.birthday}</td>
                     <td>
-                    <button type="button" class="btn btn-outline-danger" 
-                    onclick="eliminaUsuario('${usuario.id}')">
-                        <i class="fa-solid fa-user-minus"></i>
-                    </button>
                     <a href="#" onclick="verModificarUsuario('${usuario.id}')" class="btn btn-outline-warning">
                         <i class="fa-solid fa-user-pen"></i>
                     </a>
                     <a href="#" onclick="verUsuario('${usuario.id}')" class="btn btn-outline-info">
                         <i class="fa-solid fa-eye"></i>
                     </a>
-                    '</td>
+                    </td>
                 </tr>`;
                 
             }
             document.getElementById("listar").innerHTML = usuarios;
-    })
-}
-
-function eliminaUsuario(id){
-    validaToken();
-    var settings={
-        method: 'DELETE',
-        headers:{
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': localStorage.token
-        },
-    }
-    fetch(urlApi+"/api/users/"+id,settings)
-    .then(response => response.json())
-    .then(function(data){
-        listar();
-        alertas("Se ha eliminado el usuario exitosamente!",2)
     })
 }
 
@@ -95,10 +77,10 @@ function verModificarUsuario(id){
         headers:{
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': localStorage.token
+            'Authorization': `Bearer ${localStorage.token}`
         },
     }
-    fetch(urlApi+"/api/users/"+id,settings)
+    fetch(`${urlApi}/api/users/getById/${id}`,settings)
     .then(response => response.json())
     .then(function(usuario){
             var cadena='';
@@ -109,17 +91,20 @@ function verModificarUsuario(id){
                 </div>
               
                 <form action="" method="post" id="myForm">
-                    <input type="hidden" name="id" id="id" value="${usuario.id}">
-                    <label for="firstName" class="form-label">First Name</label>
-                    <input type="text" class="form-control" name="firstName" id="firstName" required value="${usuario.firstName}"> <br>
+                    <label for="name" class="form-label">First Name</label>
+                    <input type="text" class="form-control" name="name" id="name" required value="${usuario.name}"> <br>
                     <label for="lastName"  class="form-label">Last Name</label>
                     <input type="text" class="form-control" name="lastName" id="lastName" required value="${usuario.lastName}"> <br>
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" name="email" id="email" required value="${usuario.email}"> <br>
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required> <br>
+                    <input type="password" class="form-control" name="password" id="password" required> <br>
+                    <label for="address" class="form-label">Address</label>
+                    <input type="text" class="form-control" id="address" name="address" required value="${usuario.address}"> <br>
+                    <label for="birthday" class="form-label">Birthday</label>
+                    <input type="date" class="form-control" id="birthday" name="birthday" required value="${usuario.birthday}"> <br>
                     <button type="button" class="btn btn-outline-warning" 
-                        onclick="modificarUsuario('${usuario.id}')">Modificar
+                        onclick="modificarUsuario('${id}')">Modificar
                     </button>
                 </form>`;
             }
@@ -137,12 +122,12 @@ async function modificarUsuario(id){
     for(var [k, v] of formData){//convertimos los datos a json
         jsonData[k] = v;
     }
-    const request = await fetch(urlApi+"/api/users/"+id, {
+    const request = await fetch(`${urlApi}/api/users/${id}`, {
         method: 'PUT',
         headers:{
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': localStorage.token
+            'Authorization': `Bearer ${localStorage.token}`
         },
         body: JSON.stringify(jsonData)
     });
@@ -161,10 +146,10 @@ function verUsuario(id){
         headers:{
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': localStorage.token
+            'Authorization': `Bearer ${localStorage.token}`
         },
     }
-    fetch(urlApi+"/api/users/"+id,settings)
+    fetch(`${urlApi}/api/users/getById/${id}`,settings)
     .then(response => response.json())
     .then(function(usuario){
             var cadena='';
@@ -174,9 +159,11 @@ function verUsuario(id){
                     <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Visualizar Usuario</h1>
                 </div>
                 <ul class="list-group">
-                    <li class="list-group-item">Nombre: ${usuario.firstName}</li>
-                    <li class="list-group-item">Apellido: ${usuario.lastName}</li>
-                    <li class="list-group-item">Correo: ${usuario.email}</li>
+                    <li class="list-group-item">First name: ${usuario.name}</li>
+                    <li class="list-group-item">Last name: ${usuario.lastName}</li>
+                    <li class="list-group-item">Email: ${usuario.email}</li>
+                    <li class="list-group-item">Address: ${usuario.address}</li>
+                    <li class="list-group-item">Birthday: ${usuario.birthday}</li>
                 </ul>`;
               
             }
@@ -210,14 +197,18 @@ function registerForm(){
               
             <form action="" method="post" id="myForm">
                 <input type="hidden" name="id" id="id">
-                <label for="firstName" class="form-label">First Name</label>
-                <input type="text" class="form-control" name="firstName" id="firstName" required> <br>
+                <label for="name" class="form-label">First Name</label>
+                <input type="text" class="form-control" name="name" id="name" required> <br>
                 <label for="lastName"  class="form-label">Last Name</label>
                 <input type="text" class="form-control" name="lastName" id="lastName" required> <br>
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" name="email" id="email" required> <br>
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required> <br>
+                <label for="address" class="form-label">Address</label>
+                <input type="text" class="form-control" id="address" name="address" required> <br>
+                <label for="birthday" class="form-label">Birthday</label>
+                <input type="date" class="form-control" id="birthday" name="birthday" required> <br>
                 <button type="button" class="btn btn-outline-info" onclick="registrarUsuario()">Registrar</button>
             </form>`;
             document.getElementById("contentModal").innerHTML = cadena;
@@ -232,11 +223,12 @@ async function registrarUsuario(){
     for(var [k, v] of formData){//convertimos los datos a json
         jsonData[k] = v;
     }
-    const request = await fetch(urlApi+"/api/users", {
+    const request = await fetch(`${urlApi}/api/users/`, {
         method: 'POST',
         headers:{
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.token}`
         },
         body: JSON.stringify(jsonData)
     });
