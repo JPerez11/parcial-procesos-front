@@ -408,7 +408,7 @@ async function updateProduct(id){
         },
         body: JSON.stringify(jsonData)
     });
-    listar();
+    listProducts();
     alertas("Se ha modificado el producto exitosamente!",1)
     document.getElementById("contentModal").innerHTML = '';
     var myModalEl = document.getElementById('modalUsuario')
