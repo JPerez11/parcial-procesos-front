@@ -420,7 +420,7 @@ async function updateProduct(id){
 function registerFormProduct(){
     cadena = `
             <div class="p-3 mb-2 bg-light text-dark">
-                <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Registrar Usuario</h1>
+                <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Registrar Producto</h1>
             </div>
               
             <form action="" method="post" id="myForm">
@@ -438,7 +438,7 @@ function registerFormProduct(){
                     <input type="text" class="form-control" id="userId" name="userId" required> <br>
                 <button type="button" class="btn btn-outline-info" onclick="registerProduct()">Registrar</button>
             </form>`;
-            document.getElementById("myModalTitle").innerHTML = "REGISTER USER"
+            document.getElementById("myModalTitle").innerHTML = "REGISTER PRODUCT"
             document.getElementById("contentModal").innerHTML = cadena;
             var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
             myModal.toggle();
@@ -466,6 +466,41 @@ async function registerProduct(){
     var myModalEl = document.getElementById('modalUsuario')
     var modal = bootstrap.Modal.getInstance(myModalEl) // Returns a Bootstrap modal instance
     modal.hide();
+}
+
+function showProduct(id){
+    validaToken();
+    var settings={
+        method: 'GET',
+        headers:{
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.token}`
+        },
+    }
+    fetch(`${urlApi}/api/product/${id}`,settings)
+    .then(response => response.json())
+    .then(function(product){
+            var cadena='';
+            if(product){                
+                cadena = `
+                <div class="p-3 mb-2 bg-light text-dark">
+                    <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Visualizar Producto</h1>
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item">Title: ${product.data.title}</li>
+                    <li class="list-group-item">Price: ${product.data.price}</li>
+                    <li class="list-group-item">Description: ${product.data.description}</li>
+                    <li class="list-group-item">Category: ${product.data.category}</li>
+                    <li class="list-group-item">User owner: ${product.data.user.name}</li>
+                </ul>`;
+              
+            }
+            document.getElementById("myModalTitle").innerHTML = "SHOW PRODUCT"
+            document.getElementById("contentModal").innerHTML = cadena;
+            var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
+            myModal.toggle();
+    })
 }
 
 function modalConfirmacion(texto,funcion){
