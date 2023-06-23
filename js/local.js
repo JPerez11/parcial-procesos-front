@@ -162,7 +162,7 @@ async function modificarUsuario(id){
         },
         body: JSON.stringify(jsonData)
     });
-    listar();
+    listUsers();
     alertas("Se ha modificado el usuario exitosamente!",1);
     document.getElementById("contentModal").innerHTML = '';
     var myModalEl = document.getElementById('modalUsuario');
